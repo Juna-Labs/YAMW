@@ -1,5 +1,21 @@
 export namespace dto {
 	
+	export class Lyrics {
+	    instrumental: boolean;
+	    plainLyrics: string;
+	    syncedLyrics: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new Lyrics(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.instrumental = source["instrumental"];
+	        this.plainLyrics = source["plainLyrics"];
+	        this.syncedLyrics = source["syncedLyrics"];
+	    }
+	}
 	export class Song {
 	    id: string;
 	    title: string;

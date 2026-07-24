@@ -29,6 +29,10 @@ func main() {
 	streamServ := services.NewStreamServ()
 	stream := handlers.NewStream(streamServ)
 
+	lrclib := database.NewLrclib()
+	lyricsServ := services.NewLyricsServ(lrclib)
+	lyrics := handlers.NewLyrics(lyricsServ)
+
 	// Create application with options
 	err := wails.Run(&options.App{
 		Title:     "YAMW",
@@ -49,6 +53,7 @@ func main() {
 			health,
 			list,
 			stream,
+			lyrics,
 		},
 		Mac: &mac.Options{
 			WebviewIsTransparent: true,

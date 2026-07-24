@@ -18,7 +18,7 @@ func NewListServ(subsonic *database.Subsonic) *ListServ{
 func (l *ListServ) SGetRandomSongs() ([]dto.Song, error){
 	endpoint := "getRandomSongs"
 	rawSSURL := helper.CreateSSURL(endpoint)
-	SSURL := fmt.Sprintf("%s&size=%s", rawSSURL, "50")
+	SSURL := fmt.Sprintf("%s&size=%s", rawSSURL, "100")
 	
 	return l.Subsonic.FetchRandomSongs(SSURL)
 }

@@ -1,10 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
 import { GetRandomSongs } from "../wailsjs/go/handlers/List";
 import { GetStreamURL, GetCoverURL } from "../wailsjs/go/handlers/Stream";
+import { GetLyrics } from "../wailsjs/go/handlers/Lyrics";
 import { PingTest } from "../wailsjs/go/handlers/Health";
 import { HasConfig, SaveConfig } from "../wailsjs/go/main/App";
 import { dto } from "../wailsjs/go/models";
-import { Shuffle, Repeat, Play, Pause, Repeat1, Volume2, VolumeX, Palette, Settings, X } from 'lucide-react';
+import { Shuffle, Repeat, Play, Pause, Repeat1, Volume2, VolumeX, Palette, Settings, X, Mic2 } from 'lucide-react';
 
 const themes: Record<string, any> = {
     emerald: {
@@ -51,6 +52,40 @@ const themes: Record<string, any> = {
     }
 };
 
+const MarqueeText = ({ text, className }: { text: string, className?: string }) => {
+    const containerRef = useRef<HTMLDivElement>(null);
+    const textRef = useRef<HTMLSpanElement>(null);
+    const [shouldScroll, setShouldScroll] = useState(false);
+
+    useEffect(() => {
+        const checkScroll = () => {
+            if (containerRef.current && textRef.current) {
+                setShouldScroll(textRef.current.offsetWidth > containerRef.current.offsetWidth);
+            }
+        };
+        
+        checkScroll();
+        if (document.fonts) {
+            document.fonts.ready.then(checkScroll);
+        }
+    }, [text]);
+
+    return (
+        <div ref={containerRef} className={`overflow-hidden whitespace-nowrap w-full ${className || ''}`}>
+            <div className={`${shouldScroll ? 'animate-[marquee_10s_linear_infinite] flex w-max text-left' : 'block truncate'}`}>
+                <span ref={textRef} className={`${shouldScroll ? 'pr-8 shrink-0 block' : ''}`}>
+                    {text}
+                </span>
+                {shouldScroll && (
+                    <span className="pr-8 shrink-0 block">
+                        {text}
+                    </span>
+                )}
+            </div>
+        </div>
+    );
+};
+
 const CoverImage = ({ id, className, t }: { id: string, className?: string, t: any }) => {
     const [url, setUrl] = useState<string>('');
     useEffect(() => {
@@ -90,9 +125,22 @@ function App() {
     const [volume, setVolume] = useState<number>(1);
     const [showVolume, setShowVolume] = useState<boolean>(false);
     
+    // Lyrics State
+    const [showLyrics, setShowLyrics] = useState<boolean>(false);
+    const [lyricsData, setLyricsData] = useState<{time: number, text: string}[] | null>(null);
+    const [isLyricsLoading, setIsLyricsLoading] = useState<boolean>(false);
+    const [lyricsSongId, setLyricsSongId] = useState<string | null>(null);
+    const activeLyricRef = useRef<HTMLDivElement>(null);
+    
     const audioRef = useRef<HTMLAudioElement>(null);
 
     const t = themes[currentTheme];
+
+    useEffect(() => {
+        if (activeLyricRef.current && showLyrics && isPlayerOpen) {
+            activeLyricRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }, [currentTime, showLyrics, isPlayerOpen]);
 
     useEffect(() => {
         if (audioRef.current) {
@@ -159,11 +207,52 @@ function App() {
         return `${mins}:${secs.toString().padStart(2, '0')}`;
     };
 
+    const fetchLyricsData = async (song: dto.Song) => {
+        setIsLyricsLoading(true);
+        try {
+            const res = await GetLyrics(song.artist || "", song.title || "");
+            if (res.syncedLyrics) {
+                const lines = res.syncedLyrics.split('\n');
+                const parsed = [];
+                const timeRegex = /\[(\d+):(\d+\.\d+)\]/;
+                for (const line of lines) {
+                    const match = timeRegex.exec(line);
+                    if (match) {
+                        const mins = parseInt(match[1]);
+                        const secs = parseFloat(match[2]);
+                        const text = line.replace(timeRegex, '').trim();
+                        parsed.push({ time: mins * 60 + secs, text });
+                    }
+                }
+                setLyricsData(parsed);
+            } else if (res.plainLyrics) {
+                const lines = res.plainLyrics.split('\n').map((text, i) => ({ time: i * 0.001, text }));
+                setLyricsData([{ time: 0, text: "Lyrics not synced" }, ...lines]);
+            } else if (res.instrumental) {
+                setLyricsData([{ time: 0, text: "Instrumental" }]);
+            } else {
+                setLyricsData(null);
+            }
+        } catch (e) {
+            console.error("Lyrics fetch error:", e);
+            setLyricsData(null);
+        }
+        setIsLyricsLoading(false);
+    };
+
     const handlePlaySong = async (song: dto.Song) => {
         setIsPlayerOpen(true);
 
         if (activeSongId === song.id) {
             return;
+        }
+
+        setLyricsData(null);
+        if (showLyrics) {
+            setLyricsSongId(song.id);
+            fetchLyricsData(song);
+        } else {
+            setLyricsSongId(null);
         }
 
         try {
@@ -434,12 +523,40 @@ function App() {
                 
                 {activeSong && (
                     <div className="flex flex-col h-full items-center mt-6">
-                        <CoverImage id={activeSong.id} className={`w-[140px] h-[140px] object-cover rounded ${t.shadow} mb-5`} t={t} />
-                        
-                        <div className="text-center w-full min-w-0 mb-5 px-2">
-                            <div className={`truncate text-xl font-bold ${t.accent} mb-1`}>{activeSong.title || "Unknown"}</div>
-                            <div className={`truncate text-base ${t.muted}`}>{activeSong.artist || "Unknown"}</div>
-                        </div>
+                        {showLyrics ? (
+                            <div className="flex-1 w-full overflow-y-auto hide-scrollbar mb-4 flex flex-col items-center pt-2 relative [mask-image:linear-gradient(to_bottom,transparent,black_15%,black_85%,transparent)]">
+                                {isLyricsLoading ? (
+                                    <div className={`mt-20 animate-pulse ${t.muted}`}>Loading Lyrics...</div>
+                                ) : lyricsData ? (
+                                    <div className="w-full space-y-4 px-2 text-center pb-32 pt-20">
+                                        {lyricsData.map((l, i) => {
+                                            const nextTime = lyricsData[i+1]?.time || Infinity;
+                                            const isActive = currentTime >= l.time && currentTime < nextTime;
+                                            return (
+                                                <div 
+                                                    key={i} 
+                                                    ref={isActive ? activeLyricRef : null}
+                                                    className={`transition-all duration-300 ${isActive ? `${t.accent} text-xl font-bold scale-110 drop-shadow-lg` : `${t.muted} text-sm opacity-70`}`}
+                                                >
+                                                    {l.text || "♪"}
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                ) : (
+                                    <div className={`mt-20 ${t.muted}`}>No Lyrics Found</div>
+                                )}
+                            </div>
+                        ) : (
+                            <>
+                                <CoverImage id={activeSong.id} className={`w-[140px] h-[140px] object-cover rounded ${t.shadow} mb-5`} t={t} />
+                                
+                                <div className="text-center w-full min-w-0 mb-4 px-2 shrink-0">
+                                    <MarqueeText text={activeSong.title || "Unknown"} className={`text-xl font-bold ${t.accent} mb-1`} />
+                                    <div className={`truncate text-base ${t.muted}`}>{activeSong.artist || "Unknown"}</div>
+                                </div>
+                            </>
+                        )}
                         
                         <div className={`w-full flex items-center gap-3 text-sm ${t.muted} mb-6 px-1`}>
                             <span>{formatDuration(currentTime)}</span>
@@ -449,7 +566,7 @@ function App() {
                             >
                                 <div className={`w-full h-1.5 ${t.bgDark} rounded-full overflow-hidden transition-all group-hover:h-2`}>
                                     <div 
-                                        className={`h-full ${t.bgAccent} rounded-full transition-[width] duration-100`}
+                                        className={`h-full ${t.dot} rounded-full transition-all duration-100`}
                                         style={{ width: `${activeSong.duration ? (currentTime / activeSong.duration) * 100 : 0}%` }}
                                     ></div>
                                 </div>
@@ -458,6 +575,20 @@ function App() {
                         </div>
                         
                         <div className={`flex items-center justify-center gap-6 ${t.accent} mt-auto mb-6 relative`}>
+                            <button 
+                                className={`transition-colors cursor-pointer ${showLyrics ? t.accent : `${t.dark} hover:${t.muted}`}`} 
+                                onClick={(e) => { 
+                                    e.stopPropagation(); 
+                                    const next = !showLyrics;
+                                    setShowLyrics(next);
+                                    if (next && activeSong && lyricsSongId !== activeSong.id) {
+                                        setLyricsSongId(activeSong.id);
+                                        fetchLyricsData(activeSong);
+                                    }
+                                }}
+                            >
+                                <Mic2 size={24} />
+                            </button>
                             <button 
                                 className={`transition-colors cursor-pointer ${isMix ? t.accent : `${t.dark} hover:${t.muted}`}`} 
                                 onClick={(e) => { e.stopPropagation(); setIsMix(!isMix); }}
