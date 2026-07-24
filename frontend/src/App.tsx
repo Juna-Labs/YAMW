@@ -5,7 +5,7 @@ import { GetLyrics } from "../wailsjs/go/handlers/Lyrics";
 import { PingTest } from "../wailsjs/go/handlers/Health";
 import { HasConfig, SaveConfig } from "../wailsjs/go/main/App";
 import { dto } from "../wailsjs/go/models";
-import { Shuffle, Repeat, Play, Pause, Repeat1, Volume2, VolumeX, Palette, Settings, X, Mic2 } from 'lucide-react';
+import { Shuffle, Repeat, Play, Pause, Repeat1, Volume2, VolumeX, Palette, Settings, X, Mic2, SkipBack, SkipForward } from 'lucide-react';
 
 const themes: Record<string, any> = {
     emerald: {
@@ -226,10 +226,10 @@ function App() {
                 }
                 setLyricsData(parsed);
             } else if (res.plainLyrics) {
-                const lines = res.plainLyrics.split('\n').map((text, i) => ({ time: i * 0.001, text }));
-                setLyricsData([{ time: 0, text: "Lyrics not synced" }, ...lines]);
+                const lines = res.plainLyrics.split('\n').map(text => ({ time: -1, text }));
+                setLyricsData([{ time: -1, text: "Lyrics not synced" }, ...lines]);
             } else if (res.instrumental) {
-                setLyricsData([{ time: 0, text: "Instrumental" }]);
+                setLyricsData([{ time: -1, text: "Instrumental" }]);
             } else {
                 setLyricsData(null);
             }
@@ -265,6 +265,44 @@ function App() {
             }
         } catch (err) {
             console.error("Failed to play song:", err);
+        }
+    };
+
+    const playNext = (e?: React.MouseEvent) => {
+        if (e) e.stopPropagation();
+        if (isMix && songs.length > 0) {
+            const randomIndex = Math.floor(Math.random() * songs.length);
+            handlePlaySong(songs[randomIndex]);
+            return;
+        }
+        if (songs.length > 0 && activeSongId) {
+            const currentIndex = songs.findIndex(s => s.id === activeSongId);
+            if (currentIndex !== -1) {
+                const isLast = currentIndex === songs.length - 1;
+                if (!isLast) {
+                    handlePlaySong(songs[currentIndex + 1]);
+                } else if (loopMode === 1) {
+                    handlePlaySong(songs[0]);
+                } else {
+                    handlePlaySong(songs[0]);
+                }
+            }
+        }
+    };
+
+    const playPrevious = (e?: React.MouseEvent) => {
+        if (e) e.stopPropagation();
+        if (audioRef.current && audioRef.current.currentTime > 3) {
+            audioRef.current.currentTime = 0;
+            return;
+        }
+        if (songs.length > 0 && activeSongId) {
+            const currentIndex = songs.findIndex(s => s.id === activeSongId);
+            if (currentIndex > 0) {
+                handlePlaySong(songs[currentIndex - 1]);
+            } else {
+                handlePlaySong(songs[songs.length - 1]);
+            }
         }
     };
 
@@ -522,21 +560,21 @@ function App() {
                 </button>
                 
                 {activeSong && (
-                    <div className="flex flex-col h-full items-center mt-6">
+                    <div className="flex flex-col flex-1 w-full min-h-0 items-center mt-6">
                         {showLyrics ? (
-                            <div className="flex-1 w-full overflow-y-auto hide-scrollbar mb-4 flex flex-col items-center pt-2 relative [mask-image:linear-gradient(to_bottom,transparent,black_15%,black_85%,transparent)]">
+                            <div className="flex-1 w-full overflow-y-auto hide-scrollbar mb-4 flex flex-col items-center pt-2 relative min-h-0 [mask-image:linear-gradient(to_bottom,transparent,black_15%,black_85%,transparent)]">
                                 {isLyricsLoading ? (
                                     <div className={`mt-20 animate-pulse ${t.muted}`}>Loading Lyrics...</div>
                                 ) : lyricsData ? (
                                     <div className="w-full space-y-4 px-2 text-center pb-32 pt-20">
                                         {lyricsData.map((l, i) => {
-                                            const nextTime = lyricsData[i+1]?.time || Infinity;
-                                            const isActive = currentTime >= l.time && currentTime < nextTime;
+                                            const nextTime = lyricsData[i+1]?.time ?? Infinity;
+                                            const isActive = l.time >= 0 && currentTime >= l.time && currentTime < nextTime;
                                             return (
                                                 <div 
                                                     key={i} 
                                                     ref={isActive ? activeLyricRef : null}
-                                                    className={`transition-all duration-300 ${isActive ? `${t.accent} text-xl font-bold scale-110 drop-shadow-lg` : `${t.muted} text-sm opacity-70`}`}
+                                                    className={`transition-all duration-300 origin-center ${isActive ? `${t.accent} text-base font-bold scale-105 drop-shadow-lg` : `${t.muted} text-base opacity-70`}`}
                                                 >
                                                     {l.text || "♪"}
                                                 </div>
@@ -574,7 +612,7 @@ function App() {
                             <span>{formatDuration(activeSong.duration)}</span>
                         </div>
                         
-                        <div className={`flex items-center justify-center gap-6 ${t.accent} mt-auto mb-6 relative`}>
+                        <div className={`flex items-center justify-between w-full px-1 ${t.accent} mt-auto mb-2 relative`}>
                             <button 
                                 className={`transition-colors cursor-pointer ${showLyrics ? t.accent : `${t.dark} hover:${t.muted}`}`} 
                                 onClick={(e) => { 
@@ -596,10 +634,22 @@ function App() {
                                 <Shuffle size={24} />
                             </button>
                             <button 
+                                className={`transition-transform hover:scale-110 cursor-pointer ${t.dark} hover:${t.muted}`} 
+                                onClick={playPrevious}
+                            >
+                                <SkipBack size={24} />
+                            </button>
+                            <button 
                                 className={`hover:scale-110 transition-transform ${t.base} hover:${t.accent} flex items-center justify-center w-12 h-12 cursor-pointer`} 
                                 onClick={togglePlayPause}
                             >
                                 {isPlaying ? <Pause size={36} /> : <Play size={36} className="ml-1" />}
+                            </button>
+                            <button 
+                                className={`transition-transform hover:scale-110 cursor-pointer ${t.dark} hover:${t.muted}`} 
+                                onClick={playNext}
+                            >
+                                <SkipForward size={24} />
                             </button>
                             <button 
                                 className={`transition-colors cursor-pointer ${loopMode !== 0 ? t.accent : `${t.dark} hover:${t.muted}`}`} 
