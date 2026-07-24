@@ -22,7 +22,7 @@ func (s *StreamServ) CreateStream(id string) string{
 func (s *StreamServ) CreateCover(id string) string{
 	endpoint := "getCoverArt"
 	rawSSURL := helper.CreateSSURL(endpoint)
-	SSURL := fmt.Sprintf("%s&id=%s", rawSSURL, id)
+	SSURL := fmt.Sprintf("%s&id=%s&size=%s", rawSSURL, id, "150")
 
 	return SSURL
 }

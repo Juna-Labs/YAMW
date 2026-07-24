@@ -3,7 +3,6 @@ package database
 import (
 	"YAMW/internal/dto"
 	"encoding/json"
-	"fmt"
 	"io"
 	"net/http"
 )
@@ -34,8 +33,6 @@ func (l *Lrclib) FetchLRCLIB(url string) (dto.Lyrics, error){
 	err = json.Unmarshal(body, &data); if err != nil{
 		return data, err
 	}
-
-	fmt.Println(data)
 
 	return data, nil
 }

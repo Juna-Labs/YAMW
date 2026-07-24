@@ -109,8 +109,14 @@ function App() {
     const [isTesting, setIsTesting] = useState<boolean>(false);
     const [showSettings, setShowSettings] = useState<boolean>(false);
 
-    const [currentTheme, setCurrentTheme] = useState<string>('emerald');
+    const [currentTheme, setCurrentTheme] = useState<string>(() => {
+        return localStorage.getItem('yamw-theme') || 'emerald';
+    });
     const [showThemePicker, setShowThemePicker] = useState<boolean>(false);
+
+    useEffect(() => {
+        localStorage.setItem('yamw-theme', currentTheme);
+    }, [currentTheme]);
 
     const [songs, setSongs] = useState<dto.Song[]>([]);
     const [loading, setLoading] = useState(true);
