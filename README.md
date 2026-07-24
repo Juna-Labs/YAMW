@@ -1,29 +1,60 @@
-```
+<div align="center">
+  <img src="documentation/YAMW%20logo.png" alt="YAMW Logo">
+  <br><br>
+  
+  [![Release](https://img.shields.io/github/v/release/Arjuna-Ragil/YAMW)](https://github.com/Arjuna-Ragil/YAMW/releases)
+  [![Wails Build](https://github.com/Arjuna-Ragil/YAMW/actions/workflows/release.yml/badge.svg)](https://github.com/Arjuna-Ragil/YAMW/actions)
+</div>
 
- █████ █████   █████████   ██████   ██████ █████   ███   █████
-░░███ ░░███   ███░░░░░███ ░░██████ ██████ ░░███   ░███  ░░███ 
- ░░███ ███   ░███    ░███  ░███░█████░███  ░███   ░███   ░███ 
-  ░░█████    ░███████████  ░███░░███ ░███  ░███   ░███   ░███ 
-   ░░███     ░███░░░░░███  ░███ ░░░  ░███  ░░███  █████  ███  
-    ░███     ░███    ░███  ░███      ░███   ░░░█████░█████░   
-    █████    █████   █████ █████     █████    ░░███ ░░███     
-   ░░░░░    ░░░░░   ░░░░░ ░░░░░     ░░░░░      ░░░   ░░░      
-                                                              
-                                                                                                                        
-```
-[![Release](https://img.shields.io/github/v/release/Arjuna-Ragil/YAMW)](https://github.com/Arjuna-Ragil/YAMW/releases)
-[![Wails Build](https://github.com/Arjuna-Ragil/YAMW/actions/workflows/release.yml/badge.svg)](https://github.com/Arjuna-Ragil/YAMW/actions)
-##
+---
 
-**Yet Another Music Widget (YAMW)** is a custom desktop music player designed specifically to connect with your self-hosted Subsonic API server. Built to be incredibly lightweight and fast, it bypasses the heavy resource overhead of traditional Electron wrappers by utilizing Go and native OS web engines. Wrapped in a nostalgic terminal/retro aesthetic, YAMW delivers a distraction-free listening experience directly to your desktop.
+<div align="justify">
+  <b>Yet Another Music Widget (YAMW)</b> is a custom desktop music player designed specifically to connect with your self-hosted Subsonic API server. Built to be incredibly lightweight and fast, it bypasses the heavy resource overhead of traditional Electron wrappers by utilizing Go and native OS web engines. Wrapped in a nostalgic terminal/retro aesthetic, YAMW delivers a distraction-free listening experience directly to your desktop.
+</div>
 
 ## Features
-*   **Retro Terminal UI & Themes:** A clean, distraction-free minimalist interface inspired by classic terminal aesthetics. Fully customizable to match your desktop vibe.
-*   **Core Playback Essentials:** Seamless play, pause, shuffle, and loop mechanics for uninterrupted listening.
-*   **UI friendly configuration setup:** Easily connect to your Navidrome/Subsonic server directly from the app without wrestling with complex `.json` or config files.
-*   **Sing along with Lyrics:** Real-time lyrics support so you can vibe with your favorite tracks.
-*   **Insanely Lightweight:** A mere ~11MB binary size with RAM usage hovering under ~200MB
-*   **Cross-Platform:** Available and native for Windows, macOS, and Linux.
+
+*   **Retro Terminal UI & Themes:** 
+    A clean, distraction-free minimalist interface inspired by classic terminal aesthetics. Fully customizable to match your desktop vibe.
+    <div align="center">
+      <br>
+      <img src="documentation/theme%20demo.gif" width="600" alt="Theme demo">
+      <br>
+      <br>
+    </div>
+
+*   **Core Playback Essentials:** 
+    Seamless play, pause, shuffle, and loop mechanics for uninterrupted listening.
+    <div align="center">
+      <br>
+      <img src="documentation/player%20demo.gif" width="600" alt="Player demo">
+      <br>
+      <br>
+    </div>
+
+*   **UI friendly configuration setup:** 
+    Easily connect to your Navidrome/Subsonic server directly from the app without wrestling with complex .json or config files.
+    <div align="center">
+      <br>
+      <img src="documentation/config%20demo.gif" width="600" alt="Configuration demo">
+      <br>
+      <br>
+    </div>
+
+*   **Sing along with Lyrics:** 
+    Real-time lyrics support so you can vibe with your favorite tracks.
+    <div align="center">
+      <br>
+      <img src="documentation/lyrics%20demo.gif" width="600" alt="Lyrics demo">
+      <br>
+      <br>
+    </div>
+
+*   **Insanely Lightweight:** 
+    A mere ~11MB binary size with RAM usage hovering under ~200MB.
+
+*   **Cross-Platform:** 
+    Available and native for Windows, macOS, and Linux.
 
 ## Installation
 
@@ -39,7 +70,7 @@ Ready-to-use downloadable programs are automatically generated for all major ope
    * **macOS:** If blocked by Gatekeeper, go to **System Settings > Privacy & Security**, scroll down, and click **Open Anyway** for YAMW.
    * **Linux:** Ensure you grant execution permissions to the binary before running it (e.g., `chmod +x YAMW`).
 4. **Connect to Your Server:** Launch YAMW and open the configuration screen. Simply enter your Navidrome/Subsonic **Server URL** (e.g., your local or Tailscale IP), **Username**, and **Password**.
-5. **Start Listening!** Save the configuration, wait a brief moment for your library to load, and enjoy your insanely lightweight, flat-list music experience!
+5. **Start Listening:** Save the configuration, wait a brief moment for your library to load, and enjoy your insanely lightweight, flat-list music experience!
 
 ## Tech Stack
 
