@@ -50,7 +50,7 @@ export const SetupForm = ({ t, isOverlay = false, onClose, onSuccess }: SetupFor
             <h2 className={`text-xl font-bold mb-4 text-center ${t.accent}`}>SERVER CONFIG</h2>
             <form onSubmit={handleSetup} className="flex flex-col gap-3">
                 <div className="flex flex-col gap-1">
-                    <label className="text-sm">Server URL</label>
+                    <label className="text-sm">Subsonic Server URL</label>
                     <input 
                         type="url" 
                         required 
