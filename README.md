@@ -70,7 +70,15 @@ Ready-to-use downloadable programs are automatically generated for all major ope
    * **macOS:** If blocked by Gatekeeper, go to **System Settings > Privacy & Security**, scroll down, and click **Open Anyway** for YAMW.
    * **Linux:** Ensure you grant execution permissions to the binary before running it (e.g., `chmod +x YAMW`).
 4. **Connect to Your Server:** Launch YAMW and open the configuration screen. Simply enter your Navidrome/Subsonic **Server URL** (e.g., your local or Tailscale IP), **Username**, and **Password**.
-5. **Start Listening:** Save the configuration, wait a brief moment for your library to load, and enjoy your insanely lightweight, flat-list music experience!
+
+   > **!!! Don't have a server yet?** We highly recommend setting up our official companion backend, the [YAMW Subsonic Pipeline](https://github.com/Arjuna-Ragil/YAMW-Subsonic-Pipeline). It is a self-hosted Docker Compose stack that instantly spins up Navidrome and MeTube for automated media ingestion!
+   
+6. **Start Listening:** Save the configuration, wait a brief moment for your library to load, and enjoy your insanely lightweight, flat-list music experience!
+
+### Additional Installation Notes
+
+* **Universal Compatibility:** While YAMW is tailored to work perfectly with our custom [YAMW Subsonic Pipeline](https://github.com/Arjuna-Ragil/YAMW-Subsonic-Pipeline), it is inherently compatible with almost any music server that supports the Subsonic API (such as standard Navidrome, Airsonic, or Gonic).
+* **Updating YAMW:** Currently, updates are handled by manual binary replacement. Simply download the latest executable from the Releases page and replace your old file.
 
 ## Tech Stack
 
