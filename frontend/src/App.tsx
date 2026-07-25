@@ -1,14 +1,16 @@
-import { Palette, Settings } from 'lucide-react';
+import { Palette, Settings, Power, Minus } from 'lucide-react';
+import { WindowMinimise } from '../wailsjs/runtime/runtime';
 import { themes } from './constants/themes';
 import { SetupForm } from './components/SetupForm';
 import { SongList } from './components/SongList';
 import { MiniPlayer } from './components/MiniPlayer';
 import { PlayerOverlay } from './components/PlayerOverlay';
+import { ShutdownModal } from './components/ShutdownModal';
 import { useAppLogic } from './hooks/useAppLogic';
 
 function App() {
     const {
-        isConfigured, showSettings, setShowSettings, currentTheme, setCurrentTheme, showThemePicker, setShowThemePicker,
+        isConfigured, showSettings, setShowSettings, showShutdownModal, setShowShutdownModal, currentTheme, setCurrentTheme, showThemePicker, setShowThemePicker,
         songs, loading, activeSongId, currentTime, isPlaying, setIsPlaying, isPlayerOpen, setIsPlayerOpen, loopMode, setLoopMode,
         isMix, setIsMix, volume, setVolume, showVolume, setShowVolume, showLyrics, isLyricsLoading, lyricsData,
         audioRef, activeSong, handlePlaySong, handleToggleLyrics, playNext, playPrevious, togglePlayPause,
@@ -35,6 +37,7 @@ function App() {
     return (
         <div className={`w-76.5 h-96 bg-slate-950/90 backdrop-blur-md border ${t.border} shadow-2xl flex flex-col overflow-hidden ${t.base} [--wails-draggable:drag] relative rounded-xl mx-auto ${t.selection} text-lg`}>
             {showSettings && <SetupForm t={t} isOverlay={true} onClose={() => setShowSettings(false)} onSuccess={handleSetupSuccess} />}
+            {showShutdownModal && <ShutdownModal t={t} onClose={() => setShowShutdownModal(false)} />}
             <div className="absolute inset-0 pointer-events-none opacity-10 bg-[linear-gradient(transparent_50%,rgba(0,0,0,0.8)_50%)] bg-size-[100%_4px] z-50"></div>
 
             <audio 
@@ -75,9 +78,23 @@ function App() {
                     </div>
                     <button 
                         onClick={() => setShowSettings(true)}
-                        className={`${t.muted} hover:${t.base} transition-colors cursor-pointer`}
+                        className={`${t.muted} hover:${t.base} transition-colors cursor-pointer ml-1`}
                     >
                         <Settings size={16} />
+                    </button>
+                    <button 
+                        onClick={() => WindowMinimise()}
+                        className={`${t.muted} hover:${t.base} transition-colors cursor-pointer`}
+                        title="Minimize"
+                    >
+                        <Minus size={16} />
+                    </button>
+                    <button 
+                        onClick={() => setShowShutdownModal(true)}
+                        className={`${t.muted} hover:text-red-500 transition-colors cursor-pointer ml-1`}
+                        title="Quit YAMW"
+                    >
+                        <Power size={16} />
                     </button>
                 </div>
             </header>

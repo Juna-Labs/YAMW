@@ -8,6 +8,7 @@ import { dto } from "../../wailsjs/go/models";
 export const useAppLogic = () => {
     const [isConfigured, setIsConfigured] = useState<boolean | null>(null);
     const [showSettings, setShowSettings] = useState<boolean>(false);
+    const [showShutdownModal, setShowShutdownModal] = useState<boolean>(false);
 
     const [currentTheme, setCurrentTheme] = useState<string>(() => {
         return localStorage.getItem('yamw-theme') || 'emerald';
@@ -243,6 +244,7 @@ export const useAppLogic = () => {
     return {
         isConfigured, setIsConfigured,
         showSettings, setShowSettings,
+        showShutdownModal, setShowShutdownModal,
         currentTheme, setCurrentTheme,
         showThemePicker, setShowThemePicker,
         songs, loading,

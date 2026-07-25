@@ -20,6 +20,9 @@ func (a *App) startup(ctx context.Context) {
 	a.ctx = ctx
 }
 
+func (a *App) shutdown(ctx context.Context) {
+}
+
 func (a *App) SaveConfig(serverURL, username, password string) error{
 	config := helper.Config{
 		ServerURL: serverURL,
