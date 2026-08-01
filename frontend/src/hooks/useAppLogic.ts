@@ -23,7 +23,8 @@ export const useAppLogic = () => {
     const [loading, setLoading] = useState(true);
     
     // Player state
-    const [activeSongId, setActiveSongId] = useState<string | null>(null);
+    const [activeSong, setActiveSong] = useState<dto.Song | null>(null);
+    const activeSongId = activeSong?.id || null;
     const [currentTime, setCurrentTime] = useState<number>(0);
     const [isPlaying, setIsPlaying] = useState<boolean>(false);
     const [isPlayerOpen, setIsPlayerOpen] = useState<boolean>(false);
@@ -76,6 +77,8 @@ export const useAppLogic = () => {
         }
     };
 
+
+
     const fetchLyricsData = async (song: dto.Song) => {
         setIsLyricsLoading(true);
         try {
@@ -126,7 +129,7 @@ export const useAppLogic = () => {
             if (audioRef.current) {
                 audioRef.current.src = url;
                 audioRef.current.play();
-                setActiveSongId(song.id);
+                setActiveSong(song);
                 setIsPlaying(true);
             }
         } catch (err) {
@@ -138,7 +141,6 @@ export const useAppLogic = () => {
         if (e) e.stopPropagation();
         const next = !showLyrics;
         setShowLyrics(next);
-        const activeSong = songs.find(s => s.id === activeSongId);
         if (next && activeSong && lyricsSongId !== activeSong.id) {
             setLyricsSongId(activeSong.id);
             fetchLyricsData(activeSong);
@@ -161,6 +163,8 @@ export const useAppLogic = () => {
                 } else {
                     handlePlaySong(songs[0]);
                 }
+            } else {
+                handlePlaySong(songs[0]);
             }
         }
     };
@@ -217,6 +221,9 @@ export const useAppLogic = () => {
                     handlePlaySong(songs[0]);
                     return;
                 }
+            } else {
+                handlePlaySong(songs[0]);
+                return;
             }
         }
         setIsPlaying(false);
@@ -233,7 +240,7 @@ export const useAppLogic = () => {
         }
     };
 
-    const activeSong = songs.find(s => s.id === activeSongId);
+
 
     const handleSetupSuccess = () => {
         setIsConfigured(true);
@@ -247,7 +254,7 @@ export const useAppLogic = () => {
         showShutdownModal, setShowShutdownModal,
         currentTheme, setCurrentTheme,
         showThemePicker, setShowThemePicker,
-        songs, loading,
+        songs, setSongs, loading,
         activeSongId,
         currentTime, isPlaying, setIsPlaying,
         isPlayerOpen, setIsPlayerOpen,
@@ -262,6 +269,6 @@ export const useAppLogic = () => {
         playNext, playPrevious,
         togglePlayPause,
         handleTimeUpdate, handleEnded, handleSeek,
-        handleSetupSuccess,
+        handleSetupSuccess, fetchSongs
     };
 };

@@ -11,10 +11,10 @@ import { useAppLogic } from './hooks/useAppLogic';
 function App() {
     const {
         isConfigured, showSettings, setShowSettings, showShutdownModal, setShowShutdownModal, currentTheme, setCurrentTheme, showThemePicker, setShowThemePicker,
-        songs, loading, activeSongId, currentTime, isPlaying, setIsPlaying, isPlayerOpen, setIsPlayerOpen, loopMode, setLoopMode,
+        songs, setSongs, loading, activeSongId, currentTime, isPlaying, setIsPlaying, isPlayerOpen, setIsPlayerOpen, loopMode, setLoopMode,
         isMix, setIsMix, volume, setVolume, showVolume, setShowVolume, showLyrics, isLyricsLoading, lyricsData,
         audioRef, activeSong, handlePlaySong, handleToggleLyrics, playNext, playPrevious, togglePlayPause,
-        handleTimeUpdate, handleEnded, handleSeek, handleSetupSuccess
+        handleTimeUpdate, handleEnded, handleSeek, handleSetupSuccess, fetchSongs
     } = useAppLogic();
 
     const t = themes[currentTheme];
@@ -102,11 +102,13 @@ function App() {
             <main className={`flex-1 overflow-y-auto p-2 space-y-1 hide-scrollbar [--wails-draggable:no-drag] z-10 ${activeSong ? 'pb-16' : ''}`}>
                 <SongList 
                     songs={songs}
+                    setSongs={setSongs}
                     activeSongId={activeSongId}
                     isPlaying={isPlaying}
                     loading={loading}
                     t={t}
                     onPlaySong={handlePlaySong}
+                    onLoadMore={fetchSongs}
                 />
             </main>
 
