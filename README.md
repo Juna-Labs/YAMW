@@ -60,16 +60,16 @@
 
 Ready-to-use downloadable programs are automatically generated for all major operating systems. 
 
-1. Go to the [Releases](https://github.com/USERNAME/YAMW/releases) page.
-2. Download the appropriate file for your system:
+1. Go to the [Releases](https://github.com/Arjuna-Ragil/YAMW/releases) page.
+3. Download the appropriate file for your system:
    * **Windows:** `YAMW.exe`
    * **macOS:** `YAMW-macOS.zip` (Extract to get `YAMW.app`)
    * **Linux:** `YAMW` (Linux binary)
-3. **Bypass OS Security Warnings:** Since YAMW is an independent, unsigned open-source application, your operating system might flag it upon first launch. 
+4. **Bypass OS Security Warnings:** Since YAMW is an independent, unsigned open-source application, your operating system might flag it upon first launch. 
    * **Windows:** If Windows Defender SmartScreen appears, click **More info** > **Run anyway**.
    * **macOS:** If blocked by Gatekeeper, go to **System Settings > Privacy & Security**, scroll down, and click **Open Anyway** for YAMW.
    * **Linux:** Ensure you grant execution permissions to the binary before running it (e.g., `chmod +x YAMW`).
-4. **Connect to Your Server:** Launch YAMW and open the configuration screen. Simply enter your Navidrome/Subsonic **Server URL** (e.g., your local or Tailscale IP), **Username**, and **Password**.
+5. **Connect to Your Server:** Launch YAMW and open the configuration screen. Simply enter your Navidrome/Subsonic **Server URL** (e.g., your local or Tailscale IP), **Username**, and **Password**.
 
    > **!!! Don't have a server yet?** We highly recommend setting up our official companion backend, the [YAMW Subsonic Pipeline](https://github.com/Arjuna-Ragil/YAMW-Subsonic-Pipeline). It is a self-hosted Docker Compose stack that instantly spins up Navidrome and MeTube for automated media ingestion!
    
